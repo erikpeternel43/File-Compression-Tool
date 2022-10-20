@@ -1,7 +1,7 @@
 # Usage
 Compile: 
 
-        gcc -g dictionary.c file_stream.c lzw_decode.c lzw_encode.c run.c -o <output name>
+        gcc -g dictionary.c file_stream.c lzw_decode.c lzw_encode.c run.c
 
 Running: 
 
