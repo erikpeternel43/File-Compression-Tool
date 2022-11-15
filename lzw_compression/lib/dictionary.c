@@ -8,10 +8,10 @@
 /* Macro for errors */
 #define err_sys(mess) { fprintf(stderr,"Error: %s.\n", mess); exit(1); }
 
-/* Function allocates memory and returns pointer to new Dictionary_node structure */
-Dictionary_node * create_node(unsigned int code, unsigned int prefix_code, unsigned char suffix) 
+/* Function allocates memory and returns pointer to new DictNode structure */
+DictNode * create_node(unsigned int code, unsigned int prefix_code, unsigned char suffix) 
 {
-    Dictionary_node * node = malloc(sizeof(Dictionary_node));
+    DictNode * node = malloc(sizeof(DictNode));
     
     if(node != NULL)
     {
@@ -46,7 +46,7 @@ unsigned int make_key(unsigned int prefix_code, unsigned char suffix)
 }
 
 /* Recursive function for finding specific node with key search_key */
-Dictionary_node * find_dictionary_node(Dictionary_node * root, unsigned int search_key)
+DictNode * find_DictNode(DictNode * root, unsigned int search_key)
 {
     unsigned int key = make_key(root->prefix_code, root->suffix);
     /* Node is found */
@@ -55,19 +55,19 @@ Dictionary_node * find_dictionary_node(Dictionary_node * root, unsigned int sear
     else if (search_key < key)
     {
         if (root->left_child != NULL)
-            root = find_dictionary_node(root->left_child, search_key);
+            root = find_DictNode(root->left_child, search_key);
     }
     else
     {
         if (root->right_child != NULL)
-            root = find_dictionary_node(root->right_child, search_key);
+            root = find_DictNode(root->right_child, search_key);
     }
     /* Node is not found - return root node */
     return root;
 }
 
 
-void dictionary_dispose(Dictionary_node * root){
+void dictionary_dispose(DictNode * root){
     if(root == NULL)
         return;
     if(root->left_child != NULL)

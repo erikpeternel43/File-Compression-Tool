@@ -16,8 +16,8 @@ void lzw_encode(char *input, char *ouput)
     unsigned int search_key;
     int byte;
     unsigned int code;
-    Dictionary_node *root;              
-    Dictionary_node *node;              
+    DictNode *root;              
+    DictNode *node;              
 
     /* Open streams */
     FileStream *input_stream = open_file_stream(input, FILE_READ, 0, 0);
@@ -43,7 +43,7 @@ void lzw_encode(char *input, char *ouput)
     while((byte = fgetc(input_stream->fp)) != EOF)
     {
         search_key = make_key(code, byte);
-        node = find_dictionary_node(root, search_key);
+        node = find_DictNode(root, search_key);
         
         if(node->prefix_code == code && node->suffix == byte)
             /* Entry found */
@@ -55,7 +55,7 @@ void lzw_encode(char *input, char *ouput)
 
             if(next_code < MAX_CODE)
             {
-                Dictionary_node * temp = create_node(next_code, code, byte);
+                DictNode * temp = create_node(next_code, code, byte);
 
                 if(make_key(code, byte) < make_key(node->prefix_code, node->suffix)) 
                     node->left_child = temp;

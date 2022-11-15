@@ -10,7 +10,7 @@
 #define err_sys(mess) { fprintf(stderr,"Error: %s.\n", mess); exit(1); }
 
 /* Recursive function to find all characters from specific code and write them to end file */
-unsigned char decode_out(unsigned int code, FileStream * output_stream, Decode_dict_entry * dictionary)
+unsigned char decode_out(unsigned int code, FileStream * output_stream, DecodeDictNode * dictionary)
 {
     unsigned char suffix;
     unsigned char first_c;
@@ -39,7 +39,7 @@ void lzw_decode(char *input, char *output)
     unsigned int old_code;
     unsigned char first_c;
 
-    Decode_dict_entry *dictionary = malloc(dict_size * sizeof(Decode_dict_entry));
+    DecodeDictNode *dictionary = malloc(dict_size * sizeof(DecodeDictNode));
 
     /* Opening streams */
     FileStream *input_stream = open_file_stream(input, FILE_READ, 0, 256);
@@ -75,7 +75,7 @@ void lzw_decode(char *input, char *output)
         if(next_code >= dict_size)
         {
             dict_size *= 2;
-            Decode_dict_entry *tmp = realloc(dictionary, dict_size * sizeof(Decode_dict_entry));
+            DecodeDictNode *tmp = realloc(dictionary, dict_size * sizeof(DecodeDictNode));
 
             if(tmp != NULL)
                 dictionary = tmp;
