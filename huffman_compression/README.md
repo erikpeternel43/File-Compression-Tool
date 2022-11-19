@@ -10,4 +10,5 @@ Running:
         Usage for decode: /bin/run -d -i <input file> -o <output file>
 
 Cleaning:
+
         Run "make clean" in command line. 
