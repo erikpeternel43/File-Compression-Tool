@@ -9,8 +9,8 @@
 #define MAX_VALUE 256
 #endif
 
-#ifndef encode_h
-#define encode_h
+#ifndef HUFFMAN_H
+#define HUFFMAN_H
 
 /* Structure for chars */
 typedef struct Symbol Symbol;
@@ -23,7 +23,6 @@ struct Symbol
 
 /* Functions */
 void huff_encode(char *input, char *output);
+void huff_decode(char *input, char *output);
 
 #endif
-
-

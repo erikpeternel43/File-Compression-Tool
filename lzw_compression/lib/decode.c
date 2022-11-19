@@ -1,13 +1,84 @@
-/* Included files */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "file_stream.h"
 #include "dictionary.h"
 #include "lzw.h"
+#include "err_sys.h"
 
-/* Macro for errors */
-#define err_sys(mess) { fprintf(stderr,"Error: %s.\n", mess); exit(1); }
+/* Additional functions */
+unsigned char decode_out(unsigned int code, FileStream * output_stream, DecodeDictNode * dictionary);
+
+void lzw_decode(char *input, char *output)
+{
+    unsigned char current_code_length = MIN_CODE_LENGTH;    
+    unsigned int next_code = 256; 
+    unsigned int dict_size = 512;
+    unsigned char first_c;
+    unsigned int code;
+    unsigned int old_code;
+
+    DecodeDictNode *dictionary = malloc(dict_size * sizeof(DecodeDictNode));
+    if(dictionary == NULL)
+        err_sys("Allocating memory for DecodeDictNode structures")
+
+    /* Open streams */
+    FileStream *input_stream = open_file_stream(input, FILE_READ, 0, 256);
+    FileStream *output_stream = open_file_stream(output, FILE_WRITE, 0, 0);
+
+    /* Get first code from file or return if file is empty */
+    if(!read_code(input_stream, &code, current_code_length))
+        return;
+
+    write_byte(output_stream, code);
+    old_code = code;
+    first_c = code;
+
+    /* Decode rest of the file */
+    while(read_code(input_stream, &code, current_code_length))
+    {
+        /* Check for code_length increase */
+        if(code == CURRENT_MAX_CODES(current_code_length) - 1) 
+        {
+            current_code_length++;
+            continue;
+        }
+
+        if(code < next_code)
+            /* Code in dictionary */
+            first_c = decode_out(code, output_stream, dictionary);
+        else
+        {
+            /* Code not in dictionary */
+            unsigned char tmp = first_c;
+            first_c = decode_out(old_code, output_stream, dictionary);
+            write_byte(output_stream, tmp);
+        }
+        
+        /* Check if dictionary resize is needed */
+        if(next_code >= dict_size)
+        {
+            dict_size *= 2;
+            DecodeDictNode *tmp = realloc(dictionary, dict_size * sizeof(DecodeDictNode));
+            if(tmp != NULL)
+                dictionary = tmp;
+            else
+                err_sys("Reallocating memory for DecodeDictNode structures");
+        }
+        
+        /* Make entry in dictionary */        
+        dictionary[next_code].suffix = first_c;
+        dictionary[next_code].prefix_code = old_code;    
+
+        next_code++;
+        old_code = code;
+    }
+
+    free(dictionary);
+    close_file_stream(input_stream);
+    close_file_stream(output_stream);
+}
+
 
 /* Recursive function to find all characters from specific code and write them to end file */
 unsigned char decode_out(unsigned int code, FileStream * output_stream, DecodeDictNode * dictionary)
@@ -25,69 +96,7 @@ unsigned char decode_out(unsigned int code, FileStream * output_stream, DecodeDi
         first_c = code;
         suffix = code;
     }
-    fputc(suffix, output_stream->fp);
+    write_byte(output_stream, suffix);
 
     return first_c;
-}
-
-void lzw_decode(char *input, char *output)
-{
-    unsigned char current_code_length = MIN_CODE_LENGTH;    
-    unsigned int next_code = 256; 
-    unsigned int dict_size = 512;
-    unsigned int code;
-    unsigned int old_code;
-    unsigned char first_c;
-
-    DecodeDictNode *dictionary = malloc(dict_size * sizeof(DecodeDictNode));
-
-    /* Opening streams */
-    FileStream *input_stream = open_file_stream(input, FILE_READ, 0, 256);
-    FileStream *output_stream = open_file_stream(output, FILE_WRITE, 0, 0);
-
-    /* Get first code from file or return if file is empty */
-    if((code = read_code(input_stream, current_code_length)) == (unsigned int) EOF )
-        return;
-
-    fputc(code, output_stream->fp);
-    old_code = code;
-    first_c = code;
-
-    /* Decode rest of the file */
-    while((code = read_code(input_stream, current_code_length)) != (unsigned int) EOF)
-    {
-        if(code == CURRENT_MAX_CODES(current_code_length) - 1) 
-        {
-            current_code_length++;
-            continue;
-        }
-        if(code < next_code)
-            /* Code in dictionary */
-            first_c = decode_out(code, output_stream, dictionary);
-        else
-        {
-            /* Code not in dictionary */
-            unsigned char tmp = first_c;
-            first_c = decode_out(old_code, output_stream, dictionary);
-            fputc(tmp, output_stream->fp);
-        }
-        /* Check if dictionary resize is needed */
-        if(next_code >= dict_size)
-        {
-            dict_size *= 2;
-            DecodeDictNode *tmp = realloc(dictionary, dict_size * sizeof(DecodeDictNode));
-
-            if(tmp != NULL)
-                dictionary = tmp;
-            else
-                err_sys("Realloc memory");
-        }
-        
-        /* Make entry in dictionary */        
-        dictionary[next_code].suffix = first_c;
-        dictionary[next_code].prefix_code = old_code;    
-
-        next_code++;
-        old_code = code;
-    }
 }

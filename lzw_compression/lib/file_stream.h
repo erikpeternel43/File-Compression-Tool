@@ -1,8 +1,8 @@
-/* Included files */
 #include <stdio.h>
+#include <stdbool.h>
 
-#ifndef file_stream_h
-#define file_stream_h
+#ifndef FILE_STREAM_H
+#define FILE_STREAM_H
 
 /* Modes for opening file */
 typedef enum
@@ -17,14 +17,16 @@ typedef struct
 {
     FILE *fp;                  
     Mode mode;   
-    int buf;
-    int bufpos; 
+    int buffer;
+    int buffer_pos; 
 } FileStream;
 
 /* Functions */
-FileStream *open_file_stream(char *fileName, Mode mode, int buf, int bufpos);
+FileStream *open_file_stream(char *fileName, Mode mode, int buffer, int buffer_pos);
 void close_file_stream(FileStream *stream);
+void clear_output_buffer(FileStream *output_stream);
 void write_code(FileStream *stream, unsigned int code, unsigned int code_length);
-int read_code(FileStream *stream, unsigned int code_length);
+void write_byte(FileStream *stream, unsigned char byte);
+bool read_code(FileStream *stream, unsigned int *code, unsigned int code_length);
 
 #endif

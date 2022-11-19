@@ -1,13 +1,10 @@
-/* Includes */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "file_stream.h"
 #include "dictionary.h"
 #include "lzw.h"
-
-/* Macro for errors */
-#define err_sys(mess) { fprintf(stderr,"Error: %s.\n", mess); exit(1); }
+#include "err_sys.h"
 
 void lzw_encode(char *input, char *ouput)
 {
@@ -26,6 +23,7 @@ void lzw_encode(char *input, char *ouput)
     /* Get first byte from file or return if file is empty */
     if((byte = fgetc(input_stream->fp)) == EOF)
         return;
+    
     code = byte;
     write_code(output_stream, code, current_code_length);
 
@@ -46,13 +44,12 @@ void lzw_encode(char *input, char *ouput)
         node = find_DictNode(root, search_key);
         
         if(node->prefix_code == code && node->suffix == byte)
-            /* Entry found */
+            /* Dictionary entry found */
             code = node->code;
         else 
         {
-            /* Entry not found.  
+            /* Dictionary entry not found.  
             First check if dictionary is full */
-
             if(next_code < MAX_CODE)
             {
                 DictNode * temp = create_node(next_code, code, byte);
@@ -81,8 +78,11 @@ void lzw_encode(char *input, char *ouput)
             code = byte;
         }
     }
-    /* Write last found code */
+    /* Write last code found */
     write_code(output_stream, code, current_code_length);
+
+    /* Write any bits left in output buffer to stream */
+    clear_output_buffer(output_stream);
 
     dictionary_dispose(root);
     close_file_stream(input_stream);

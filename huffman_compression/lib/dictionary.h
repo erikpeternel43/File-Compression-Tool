@@ -1,8 +1,7 @@
 #include <stdbool.h>
 
-#ifndef dictionary_h
-#define dictionary_h
-
+#ifndef DICTIONARY_H
+#define DICTIONARY_H
 
 /* Structure for every entry in dictionary */
 typedef struct DictNode DictNode;
@@ -21,7 +20,6 @@ struct DictNode
     int value;                         
     int position;                      
 };
-
 
 /* Functions */
 DictNode * create_node(bool is_zero, bool is_root, bool is_leaf, DictNode * parent, unsigned char symbol, int value, int position);

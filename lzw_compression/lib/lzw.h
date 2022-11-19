@@ -8,6 +8,7 @@
 #define MAX_CODE_LENGTH 20
 #endif
 
+/* Max code written with MAX_CODE_LENGHT bits */
 #ifndef MAX_CODE
 #define MAX_CODE (1 << MAX_CODE_LENGTH)
 #endif
@@ -17,8 +18,8 @@
 #define CURRENT_MAX_CODES(bits) ((unsigned int)(1 << (bits)))
 #endif
 
-#ifndef lzw
-#define lzw
+#ifndef LZW_H
+#define LZW_H
 
 /* Functions */
 void lzw_encode(char *input, char *output);

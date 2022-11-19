@@ -1,18 +1,14 @@
-/* Included files */
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "dictionary.h"
 #include "lzw.h"
+#include "err_sys.h"
 
-/* Macro for errors */
-#define err_sys(mess) { fprintf(stderr,"Error: %s.\n", mess); exit(1); }
-
-/* Function allocates memory and returns pointer to new DictNode structure */
+/* Creates and returns new DictNode structure */
 DictNode * create_node(unsigned int code, unsigned int prefix_code, unsigned char suffix) 
 {
     DictNode * node = malloc(sizeof(DictNode));
-    
     if(node != NULL)
     {
         node->code = code;
@@ -22,7 +18,7 @@ DictNode * create_node(unsigned int code, unsigned int prefix_code, unsigned cha
         node->left_child = NULL;
     }
     else
-        err_sys("Allocating memory for dictionary node");
+        err_sys("Allocating memory for DictNode structure");
 
     return node;
 }
@@ -37,9 +33,7 @@ unsigned int make_key(unsigned int prefix_code, unsigned char suffix)
 
     key = suffix & 0xF0;
     key <<= MAX_CODE_LENGTH;
-
     key |= (prefix_code << 4);
-
     key |= (suffix & 0x0F);
 
     return key;
@@ -49,7 +43,6 @@ unsigned int make_key(unsigned int prefix_code, unsigned char suffix)
 DictNode * find_DictNode(DictNode * root, unsigned int search_key)
 {
     unsigned int key = make_key(root->prefix_code, root->suffix);
-    /* Node is found */
     if (key == search_key)
         return root;
     else if (search_key < key)
@@ -62,12 +55,11 @@ DictNode * find_DictNode(DictNode * root, unsigned int search_key)
         if (root->right_child != NULL)
             root = find_DictNode(root->right_child, search_key);
     }
-    /* Node is not found - return root node */
     return root;
 }
 
-
-void dictionary_dispose(DictNode * root){
+void dictionary_dispose(DictNode * root)
+{
     if(root == NULL)
         return;
     if(root->left_child != NULL)

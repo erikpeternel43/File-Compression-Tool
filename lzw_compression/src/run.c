@@ -29,8 +29,8 @@ int main(int argc, char * argv[]){
             break;
         case 'h':
         case '?':
-            printf("Usage for encode: /a.out -c -i <input file> -o <output file> \n");
-            printf("Usage for decode: /a.out -d -i <input file> -o <output file> \n");
+            printf("Usage for encode: ./run -c -i <input file> -o <output file> \n");
+            printf("Usage for decode: ./run -d -i <input file> -o <output file> \n");
             return 0;
         }
     }

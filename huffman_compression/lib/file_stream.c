@@ -1,29 +1,26 @@
-/* Included files */
-#include "file_stream.h"
 #include <stdlib.h>
-
-/* Macro for errors */
-#define err_sys(mess) { fprintf(stderr,"Error: %s.\n", mess); exit(1); }
+#include "file_stream.h"
+#include "err_sys.h"
 
 /* Additional functions */
-static int next_bit(FileStream *stream);
+void write_bit(FileStream *stream, int bit);
 
 /* Function initialize and returns FileStream structure */
-FileStream *open_file_stream(char *fileName, Mode mode, int buf, int bufpos)
+FileStream *open_file_stream(char *fileName, Mode mode, int buffer, int buffer_pos)
 {
     const char modes[3][3] = {"rb", "wb", "ab"};  
     FileStream *stream = malloc(sizeof(FileStream));
 
     if(stream == NULL)
-        err_sys("Allocating memory");
+        err_sys("Allocating memory for FileStream structure");
 
     stream->fp = fopen(fileName, modes[mode]);
     if(stream->fp == NULL)
         err_sys("Opening file");
 
     stream->mode = mode;
-    stream->buf = buf;
-    stream->bufpos = bufpos;
+    stream->buffer = buffer;
+    stream->buffer_pos = buffer_pos;
 
     return stream;
 }
@@ -32,13 +29,8 @@ FileStream *open_file_stream(char *fileName, Mode mode, int buf, int bufpos)
 void close_file_stream(FileStream *stream)
 {
     int return_status;
-
     if(stream == NULL)
-        err_sys("Accessing memory");
-
-    /* If theres if bits left in bufpos after writing -> output another byte */
-    if(stream->mode == FILE_WRITE && stream->bufpos != 0)
-        fputc(stream->buf, stream->fp);
+        err_sys("FileStream object does not exist");
 
     return_status = fclose(stream->fp);
     if(return_status < 0)
@@ -47,88 +39,91 @@ void close_file_stream(FileStream *stream)
     free(stream);
 }
 
-/* Function writes code of length code_length to stream */
-void write_code(FileStream *stream, char * code, unsigned int code_length)
+/* Function clears output buffer */
+void clear_output_buffer(FileStream *output_stream)
 {
     int return_status;
-
-    int mask_pos = 0;
-    while (code_length--)
-    {
-        /* Check if there is 0 or 1 in code at mask_pos and put result in buf at bufpos */
-        if(code[mask_pos])
-            stream->buf |= 1 << stream->bufpos;
-        else
-            stream->buf |= 0 << stream->bufpos;
-        mask_pos++;
-        /* If buffer is full then output */
-        if (stream->bufpos++ == 7) 
-        {
-            return_status = fputc(stream->buf, stream->fp);
-            if(return_status == EOF)
-                err_sys("Writing to file");
-
-            stream->buf = 0;
-            stream->bufpos = 0;
-        }
+    if(output_stream->buffer_pos != 0){
+        return_status = fputc(output_stream->buffer, output_stream->fp);
+        if(return_status == EOF)
+            err_sys("Writing to file");
     }
 }
 
-/* Function writes byte to stream */
-void write_byte(FileStream *stream, unsigned char byte){
-    int return_status;
-
-    int mask_pos = 0;
+/* Function reads byte from stream */
+int read_byte(FileStream *stream)
+{
+    unsigned char code = 0;
     for (int i = 0; i < 8; i++)
     {
-        /* Check if there is 0 or 1 in code at mask_pos and put result in buf at bufpos */
-        if(byte & (1 << mask_pos))
-            stream->buf |= 1 << stream->bufpos;
-        else
-            stream->buf |= 0 << stream->bufpos;
-        mask_pos++;
-        /* If buffer is full then output */
-        if (stream->bufpos++ == 7) 
-        {
-            return_status = fputc(stream->buf, stream->fp);
-            if(return_status == EOF)
-                err_sys("Writing to file");
-
-            stream->buf = 0;
-            stream->bufpos = 0;
-        }
-    }
-}
-
-/* Function reads code of length - code_length from stream */
-int read_code(FileStream *stream, unsigned int code_length)
-{
-    unsigned int code = 0;
-    for (unsigned int i = 0; i < code_length; i++)
-    {
-        int bit = next_bit(stream);
+        int bit = read_bit(stream);
         if (bit == EOF)
             return EOF;
-        code = code | ( bit << i );
+        code = code | (bit << i);
     }
     return code;
 }
 
-/* Function reads one bit from buf and returns its value */
-int next_bit(FileStream *stream){
+/* Function reads one bit from buffer and returns its value */
+int read_bit(FileStream *stream)
+{
     int bit;
     /* If max bit is reached */
-    if (stream->bufpos == 256)
+    if (stream->buffer_pos == 256)
     {
-        stream->bufpos = 1;
-        stream->buf = fgetc(stream->fp);
-        if (stream->buf == EOF)
+        stream->buffer_pos = 1;
+        stream->buffer = fgetc(stream->fp);
+        if (stream->buffer == EOF)
             return EOF;
     }
-    if(stream->buf & stream->bufpos)
+
+    if(stream->buffer & stream->buffer_pos)
         bit = 1;
     else
         bit = 0;
-    stream->bufpos <<= 1;
+
+    stream->buffer_pos <<= 1;
     return bit;
+}
+
+/* Function writes code of length code_length to stream */
+void write_code(FileStream *stream, char * code, unsigned int code_length)
+{
+    int mask_pos = 0;
+    while (code_length--){
+        write_bit(stream, code[mask_pos]);
+        mask_pos++;
+    }
+}
+
+/* Function writes byte to stream */
+void write_byte(FileStream *stream, unsigned char byte)
+{
+    int bit;
+    for (int mask_pos = 0; mask_pos < 8; mask_pos++)
+    {
+        bit = byte & (1 << mask_pos);
+        write_bit(stream, bit);
+    }
+}
+
+/* Function writes bit to stream */
+void write_bit(FileStream *stream, int bit)
+{
+    int return_status;
+
+    if(bit)
+        stream->buffer |= 1 << stream->buffer_pos;
+    else
+        stream->buffer |= 0 << stream->buffer_pos;
+
+    /* If buffer is full then output */
+    if (stream->buffer_pos++ == 7) 
+    {
+        return_status = fputc(stream->buffer, stream->fp);
+        if(return_status == EOF)
+            err_sys("Writing to file");
+        stream->buffer = 0;
+        stream->buffer_pos = 0;
+    }
 }

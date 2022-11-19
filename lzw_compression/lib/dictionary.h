@@ -1,5 +1,5 @@
-#ifndef dictionary_h
-#define dictionary_h
+#ifndef DICTIONARY_H
+#define DICTIONARY_H
 
 /* Structure for every entry in dictionary - used in encoding */
 typedef struct DictNode DictNode;
@@ -14,7 +14,7 @@ struct DictNode
     DictNode *right_child;          
 };
 
-/* Structure of dictionary for decoding */
+/* Structure for every entry in dictionary - used in decoding */
 typedef struct DecodeDictNode
 {
     unsigned int  prefix_code;      
