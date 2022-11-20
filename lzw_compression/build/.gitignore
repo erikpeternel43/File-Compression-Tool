@@ -1,5 +1,1 @@
-.decode.o
-.dictionary.o
-.encode.o
-.file_stream.o
-.run.o
+*.o
