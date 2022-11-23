@@ -2,7 +2,7 @@ CC = gcc
 FLAGS = -O3 -Wall -Wextra -pedantic -std=c99
 
 
-run: build/dictionary.o build/file_stream.o build/decode.o build/encode.o src/run.o
+run: build/dictionary.o build/file_stream.o build/decode.o build/encode.o build/run.o
 		$(CC) build/dictionary.o build/file_stream.o build/decode.o build/encode.o build/run.o -o bin/run $(FLAGS)
 
 build/dictionary.o:
@@ -17,7 +17,7 @@ build/decode.o:
 build/encode.o:
 		$(CC) -c lib/encode.c -o build/encode.o $(FLAGS)
 
-src/run.o:
+build/run.o:
 		$(CC) -c src/run.c -o build/run.o $(FLAGS)
 
 clean:
