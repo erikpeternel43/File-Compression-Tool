@@ -3,7 +3,7 @@ FLAGS = -O3 -Wall -Wextra -pedantic -std=c99
 GUI_FLAGS = `pkg-config --cflags --libs gtk+-3.0` -export-dynamic
 
 
-run: lzw_compression/build/dictionary.o lzw_compression/build/file_stream.o lzw_compression/build/decode.o lzw_compression/build/encode.o lzw_compression/build/run.o huffman_compression/build/dictionary.o huffman_compression/build/file_stream.o huffman_compression/build/decode.o huffman_compression/build/encode.o huffman_compression/build/run.o build/gui.o build/run.o 
+run: lzw_compression/build/dictionary.o lzw_compression/build/file_stream.o lzw_compression/build/decode.o lzw_compression/build/encode.o lzw_compression/build/run.o huffman_compression/build/dictionary.o huffman_compression/build/file_stream.o huffman_compression/build/decode.o huffman_compression/build/encode.o huffman_compression/build/run.o build/gui.o build/run.o
 		$(CC) build/gui.o build/run.o -o bin/run $(FLAGS) $(GUI_FLAGS)
 		$(CC) lzw_compression/build/dictionary.o lzw_compression/build/file_stream.o lzw_compression/build/decode.o lzw_compression/build/encode.o lzw_compression/build/run.o -o lzw_compression/bin/run $(FLAGS)
 		$(CC) huffman_compression/build/dictionary.o huffman_compression/build/file_stream.o huffman_compression/build/decode.o huffman_compression/build/encode.o huffman_compression/build/run.o -o huffman_compression/bin/run $(FLAGS)
