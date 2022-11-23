@@ -14,3 +14,8 @@ Running:
 Cleaning:
 
         Run "make clean" in command line. 
+
+# GUI 
+
+        ![Capture](https://user-images.githubusercontent.com/76570883/203646775-cee291c0-b0a1-4fca-b688-08a86c922985.PNG)
+        
