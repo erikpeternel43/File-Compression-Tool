@@ -1,10 +1,8 @@
 # Usage
 Prerequirements:
-
-        In order to compile, gtk+3.0 library is required. Library can be installed from command line:
+In order to compile, gtk+3.0 library is required. Library can be installed from command line:
         
         sudo apt-get install libgtk-3-dev
-
 
 Building: 
 
