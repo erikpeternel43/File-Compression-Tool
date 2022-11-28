@@ -22,7 +22,7 @@ typedef struct
 } FileStream;
 
 /* Functions */
-FileStream *open_file_stream(char *fileName, Mode mode, int buffer, int buffer_pos);
+FileStream* open_file_stream(char *fileName, Mode mode, int buffer, int buffer_pos);
 void close_file_stream(FileStream *stream);
 void clear_output_buffer(FileStream *output_stream);
 void write_code(FileStream *stream, unsigned int code, unsigned int code_length);

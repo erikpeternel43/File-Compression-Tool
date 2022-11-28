@@ -8,19 +8,19 @@
 
 void huff_encode(char *input, char *output)
 {
-    DictNode * root;
-    DictNode * zero_node;
+    DictNode *root;
+    DictNode *zero_node;
     int byte;
     int code_lenght;
-    char * zero_code;
-    char * code;
+    char *zero_code;
+    char *code;
 
     /* Open streams */
-    FileStream * input_stream = open_file_stream(input, FILE_READ, 0, 0);
-    FileStream * output_stream = open_file_stream(output, FILE_WRITE, 0, 0);
+    FileStream *input_stream = open_file_stream(input, FILE_READ, 0, 0);
+    FileStream *output_stream = open_file_stream(output, FILE_WRITE, 0, 0);
 
     /* Create array for all possible chars */
-    Symbol ** symbols_array = calloc(MAX_VALUE, sizeof(Symbol *));
+    Symbol **symbols_array = calloc(MAX_VALUE, sizeof(Symbol*));
     if(symbols_array == NULL)
         err_sys("Allocating memory for Symbol array");
 
@@ -30,7 +30,7 @@ void huff_encode(char *input, char *output)
 
     while ((byte = fgetc(input_stream->fp)) != EOF)
     {
-        Symbol * symbol = symbols_array[byte];
+        Symbol *symbol = symbols_array[byte];
         if(symbol)
         {
             /* Byte in dictionary */

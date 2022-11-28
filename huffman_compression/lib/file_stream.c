@@ -6,7 +6,7 @@
 void write_bit(FileStream *stream, int bit);
 
 /* Function initialize and returns FileStream structure */
-FileStream *open_file_stream(char *fileName, Mode mode, int buffer, int buffer_pos)
+FileStream* open_file_stream(char *fileName, Mode mode, int buffer, int buffer_pos)
 {
     const char modes[3][3] = {"rb", "wb", "ab"};  
     FileStream *stream = malloc(sizeof(FileStream));
@@ -87,7 +87,7 @@ int read_bit(FileStream *stream)
 }
 
 /* Function writes code of length code_length to stream */
-void write_code(FileStream *stream, char * code, unsigned int code_length)
+void write_code(FileStream *stream, char *code, unsigned int code_length)
 {
     int mask_pos = 0;
     while (code_length--){

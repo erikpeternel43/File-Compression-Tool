@@ -22,10 +22,10 @@ struct DictNode
 };
 
 /* Functions */
-DictNode * create_node(bool is_zero, bool is_root, bool is_leaf, DictNode * parent, unsigned char symbol, int value, int position);
-DictNode * dict_insert(int byte, DictNode ** zero_node);
-char * get_code_from_node(DictNode * node, int * code_lenght);
-void validate_and_update(DictNode * node, DictNode * root);
-void dictionary_dispose(DictNode * root);
+DictNode* create_node(bool is_zero, bool is_root, bool is_leaf, DictNode *parent, unsigned char symbol, int value, int position);
+DictNode* dict_insert(int byte, DictNode **zero_node);
+char* get_code_from_node(DictNode *node, int *code_lenght);
+void validate_and_update(DictNode *node, DictNode *root);
+void dictionary_dispose(DictNode *root);
 
 #endif

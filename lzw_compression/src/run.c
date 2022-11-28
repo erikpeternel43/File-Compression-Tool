@@ -6,11 +6,11 @@
 #include "../lib/lzw.h"
 
 
-int main(int argc, char * argv[]){
+int main(int argc, char *argv[]){
     int c;
     char encode = 1;
-    char * input = NULL;
-    char * output = NULL;
+    char *input = NULL;
+    char *output = NULL;
     
     while ((c = getopt (argc, argv, "cdi:o:h?")) != -1){
         switch (c)

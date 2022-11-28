@@ -6,9 +6,9 @@
 #include "err_sys.h"
 
 /* Creates and returns new DictNode structure */
-DictNode * create_node(unsigned int code, unsigned int prefix_code, unsigned char suffix) 
+DictNode* create_node(unsigned int code, unsigned int prefix_code, unsigned char suffix) 
 {
-    DictNode * node = malloc(sizeof(DictNode));
+    DictNode *node = malloc(sizeof(DictNode));
     if(node != NULL)
     {
         node->code = code;
@@ -40,7 +40,7 @@ unsigned int make_key(unsigned int prefix_code, unsigned char suffix)
 }
 
 /* Recursive function for finding specific node with key search_key */
-DictNode * find_DictNode(DictNode * root, unsigned int search_key)
+DictNode* find_DictNode(DictNode *root, unsigned int search_key)
 {
     unsigned int key = make_key(root->prefix_code, root->suffix);
     if (key == search_key)
@@ -58,7 +58,7 @@ DictNode * find_DictNode(DictNode * root, unsigned int search_key)
     return root;
 }
 
-void dictionary_dispose(DictNode * root)
+void dictionary_dispose(DictNode* root)
 {
     if(root == NULL)
         return;

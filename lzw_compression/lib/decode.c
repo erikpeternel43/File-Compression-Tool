@@ -7,7 +7,7 @@
 #include "err_sys.h"
 
 /* Additional functions */
-unsigned char decode_out(unsigned int code, FileStream * output_stream, DecodeDictNode * dictionary);
+unsigned char decode_out(unsigned int code, FileStream *output_stream, DecodeDictNode *dictionary);
 
 void lzw_decode(char *input, char *output)
 {
@@ -81,7 +81,7 @@ void lzw_decode(char *input, char *output)
 
 
 /* Recursive function to find all characters from specific code and write them to end file */
-unsigned char decode_out(unsigned int code, FileStream * output_stream, DecodeDictNode * dictionary)
+unsigned char decode_out(unsigned int code, FileStream *output_stream, DecodeDictNode *dictionary)
 {
     unsigned char suffix;
     unsigned char first_c;

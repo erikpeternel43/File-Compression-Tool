@@ -21,12 +21,12 @@ typedef struct
 } FileStream;
 
 /* Functions */
-FileStream *open_file_stream(char *fileName, Mode mode, int buf, int bufpos);
+FileStream* open_file_stream(char *fileName, Mode mode, int buf, int bufpos);
 void close_file_stream(FileStream *stream);
 void clear_output_buffer(FileStream *output_stream);
 int read_byte(FileStream *stream);
 int read_bit(FileStream *stream);
-void write_code(FileStream *stream, char * code, unsigned int code_length);
+void write_code(FileStream *stream, char *code, unsigned int code_length);
 void write_byte(FileStream *stream, unsigned char byte);
 
 #endif

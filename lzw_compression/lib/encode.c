@@ -52,7 +52,7 @@ void lzw_encode(char *input, char *ouput)
             First check if dictionary is full */
             if(next_code < MAX_CODE)
             {
-                DictNode * temp = create_node(next_code, code, byte);
+                DictNode *temp = create_node(next_code, code, byte);
 
                 if(make_key(code, byte) < make_key(node->prefix_code, node->suffix)) 
                     node->left_child = temp;

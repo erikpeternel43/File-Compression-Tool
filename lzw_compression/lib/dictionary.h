@@ -23,9 +23,9 @@ typedef struct DecodeDictNode
 
 
 /* Functions */
-DictNode * create_node(unsigned int code, unsigned int prefix_code, unsigned char suffix);
-DictNode * find_DictNode(DictNode * root, unsigned int search_key);
-void dictionary_dispose(DictNode * root);
+DictNode* create_node(unsigned int code, unsigned int prefix_code, unsigned char suffix);
+DictNode* find_DictNode(DictNode *root, unsigned int search_key);
+void dictionary_dispose(DictNode *root);
 unsigned int make_key(unsigned int prefix_code, unsigned char suffix);
 
 #endif
