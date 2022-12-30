@@ -3,9 +3,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
+
 #include "../lib/huffman.h"
 
-
+/*
 int main(int argc, char *argv[]){
     int c;
     char encode = 1;
@@ -42,4 +43,10 @@ int main(int argc, char *argv[]){
 
     return 0;
 
+}
+*/
+
+int main(int argc, char *argv[])
+{
+    huff_encode("/home/erik/diplomska/diplomska_naloga/huffman_compression/bin/sum", "random_test_compressed");
 }

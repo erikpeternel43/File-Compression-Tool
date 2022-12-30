@@ -28,15 +28,15 @@ void huff_encode(char *input, char *output)
     root = create_node(true, true, true, NULL, EMPTY_VALUE, 0, MAX_VALUE * 2);   /* Max positions possible (256 * 2) */
     zero_node = root;
 
-    while ((byte = fgetc(input_stream->fp)) != EOF)
+    while ((byte = get_char_from_buffer(input_stream)) != EOF)
     {
+
         Symbol *symbol = symbols_array[byte];
         if(symbol)
         {
             /* Byte in dictionary */
             code = get_code_from_node(symbol->node, &code_lenght);
             write_code(output_stream, code, code_lenght);
-
             validate_and_update(symbol->node, root);
             free(code);
         }
