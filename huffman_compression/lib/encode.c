@@ -28,9 +28,8 @@ void huff_encode(char *input, char *output)
     root = create_node(true, true, true, NULL, EMPTY_VALUE, 0, MAX_VALUE * 2);   /* Max positions possible (256 * 2) */
     zero_node = root;
 
-    while ((byte = get_char_from_buffer(input_stream)) != EOF)
+    while ((byte = get_char(input_stream)) != EOF)
     {
-
         Symbol *symbol = symbols_array[byte];
         if(symbol)
         {
@@ -64,7 +63,7 @@ void huff_encode(char *input, char *output)
     zero_code = get_code_from_node(zero_node, &code_lenght);
     write_code(output_stream, zero_code, code_lenght);
 
-    /* Write any bits left in output buffer to stream */
+    /* Write any bytes/bits left in buffers (io_buffer and char_buffer) to stream */
     clear_output_buffer(output_stream);
 
     free(zero_code);

@@ -64,7 +64,10 @@ void huff_decode(char *input, char *output)
             validate_and_update(node, root);
         }
     }
+
+    /* Write any bytes left in io_buffer to stream */
     clear_output_buffer(output_stream);
+
     dictionary_dispose(root);
     close_file_stream(input_stream);
     close_file_stream(output_stream);
