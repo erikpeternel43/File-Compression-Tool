@@ -48,5 +48,5 @@ int main(int argc, char *argv[]){
 
 int main(int argc, char *argv[])
 {
-    huff_encode("/home/erik/diplomska/diplomska_naloga/huffman_compression/bin/sum", "random_test_compressed");
+    huff_encode("/home/erik/diplomska/diplomska_naloga/huffman_compression/bin/kennedy.xls", "random_test_compressed");
 }

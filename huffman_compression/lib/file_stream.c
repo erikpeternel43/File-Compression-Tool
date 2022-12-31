@@ -21,7 +21,7 @@ FileStream* open_file_stream(char *fileName, Mode mode, int curr_char, int curr_
     stream->mode = mode;
     stream->curr_char = curr_char;
     stream->curr_char_pos = curr_char_pos;
-    stream->buffer = malloc(512 * sizeof(unsigned char));
+    stream->buffer = malloc(1024 * sizeof(unsigned char));
     stream->buffer_pos = 0;
     stream->buffer_strlen = 0;
     
@@ -135,7 +135,7 @@ void write_bit(FileStream *stream, int bit)
 int get_char_from_buffer(FileStream *stream)
 {
     if(stream->buffer_pos == stream->buffer_strlen){
-        stream->buffer_strlen = fread(stream->buffer, sizeof(unsigned char), 512, stream->fp);
+        stream->buffer_strlen = fread(stream->buffer, sizeof(unsigned char), 1024, stream->fp);
         if(ferror(stream->fp))
             err_sys("Reading from file");
         if(feof(stream->fp) && stream->buffer_strlen == 0)
@@ -149,9 +149,9 @@ int get_char_from_buffer(FileStream *stream)
 
 void put_char_to_buffer(FileStream *stream, unsigned char character)
 {
-    if(stream->buffer_pos == 512){
-        stream->buffer_strlen = fwrite(stream->buffer, sizeof(unsigned char), 512, stream->fp);
-        if(stream->buffer_strlen != 512)
+    if(stream->buffer_pos == 1024){
+        stream->buffer_strlen = fwrite(stream->buffer, sizeof(unsigned char), 1024, stream->fp);
+        if(stream->buffer_strlen != 1024)
             err_sys("Writing to file");
         stream->buffer_pos = 0;
     }
