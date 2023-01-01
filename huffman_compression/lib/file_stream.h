@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+#ifndef IO_BUFFER_SIZE
+#define IO_BUFFER_SIZE 1024
+#endif
+
 #ifndef FILE_STREAM_H
 #define FILE_STREAM_H
 

@@ -22,7 +22,7 @@ FileStream* open_file_stream(char *fileName, Mode mode, int char_buffer, int cha
     stream->mode = mode;
     stream->char_buffer = char_buffer;
     stream->char_buffer_pos = char_buffer_pos;
-    stream->io_buffer = malloc(1024 * sizeof(unsigned char));
+    stream->io_buffer = malloc(IO_BUFFER_SIZE * sizeof(unsigned char));
     stream->io_buffer_pos = 0;
     stream->io_buffer_length = 0;
     
@@ -137,7 +137,7 @@ void write_bit(FileStream *stream, int bit)
 int get_char(FileStream *stream)
 {
     if(stream->io_buffer_pos == stream->io_buffer_length){
-        stream->io_buffer_length = fread(stream->io_buffer, sizeof(unsigned char), 1024, stream->fp);
+        stream->io_buffer_length = fread(stream->io_buffer, sizeof(unsigned char), IO_BUFFER_SIZE, stream->fp);
         if(ferror(stream->fp))
             err_sys("Reading from file");
         if(feof(stream->fp) && stream->io_buffer_length == 0)
@@ -152,9 +152,9 @@ int get_char(FileStream *stream)
 /* Function puts character to stream using custum buffering */
 void put_char(FileStream *stream, unsigned char character)
 {
-    if(stream->io_buffer_pos == 1024){
-        stream->io_buffer_length = fwrite(stream->io_buffer, sizeof(unsigned char), 1024, stream->fp);
-        if(stream->io_buffer_length != 1024)
+    if(stream->io_buffer_pos == IO_BUFFER_SIZE){
+        stream->io_buffer_length = fwrite(stream->io_buffer, sizeof(unsigned char), IO_BUFFER_SIZE, stream->fp);
+        if(stream->io_buffer_length != IO_BUFFER_SIZE)
             err_sys("Writing to file");
         stream->io_buffer_pos = 0;
     }
