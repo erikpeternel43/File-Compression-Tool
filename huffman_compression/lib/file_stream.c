@@ -6,7 +6,7 @@
 void write_bit(FileStream *stream, int bit);
 
 /* Function initialize and returns FileStream structure */
-FileStream* open_file_stream(char *fileName, Mode mode, int buffer, int buffer_pos)
+FileStream* open_file_stream(char *fileName, Mode mode, int char_buffer, int char_buffer_pos)
 {
     const char modes[3][3] = {"rb", "wb", "ab"};  
     FileStream *stream = malloc(sizeof(FileStream));
@@ -19,8 +19,8 @@ FileStream* open_file_stream(char *fileName, Mode mode, int buffer, int buffer_p
         err_sys("Opening file");
 
     stream->mode = mode;
-    stream->buffer = buffer;
-    stream->buffer_pos = buffer_pos;
+    stream->char_buffer = char_buffer;
+    stream->char_buffer_pos = char_buffer_pos;
 
     return stream;
 }
@@ -39,18 +39,18 @@ void close_file_stream(FileStream *stream)
     free(stream);
 }
 
-/* Function clears output buffer */
-void clear_output_buffer(FileStream *output_stream)
+/* Function clears char_buffer */
+void clear_output_buffer(FileStream *stream)
 {
     int return_status;
-    if(output_stream->buffer_pos != 0){
-        return_status = fputc(output_stream->buffer, output_stream->fp);
+    if(stream->char_buffer_pos != 0){
+        return_status = fputc(stream->char_buffer, stream->fp);
         if(return_status == EOF)
             err_sys("Writing to file");
     }
 }
 
-/* Function reads byte from stream */
+/* Function reads byte from stream and outputs its value */
 int read_byte(FileStream *stream)
 {
     unsigned char code = 0;
@@ -64,25 +64,25 @@ int read_byte(FileStream *stream)
     return code;
 }
 
-/* Function reads one bit from buffer and returns its value */
+/* Function reads one bit from stream and returns its value */
 int read_bit(FileStream *stream)
 {
     int bit;
     /* If max bit is reached */
-    if (stream->buffer_pos == 256)
+    if (stream->char_buffer_pos == 256)
     {
-        stream->buffer_pos = 1;
-        stream->buffer = fgetc(stream->fp);
-        if (stream->buffer == EOF)
+        stream->char_buffer_pos = 1;
+        stream->char_buffer = fgetc(stream->fp);
+        if (stream->char_buffer == EOF)
             return EOF;
     }
 
-    if(stream->buffer & stream->buffer_pos)
+    if(stream->char_buffer & stream->char_buffer_pos)
         bit = 1;
     else
         bit = 0;
 
-    stream->buffer_pos <<= 1;
+    stream->char_buffer_pos <<= 1;
     return bit;
 }
 
@@ -113,17 +113,17 @@ void write_bit(FileStream *stream, int bit)
     int return_status;
 
     if(bit)
-        stream->buffer |= 1 << stream->buffer_pos;
+        stream->char_buffer |= 1 << stream->char_buffer_pos;
     else
-        stream->buffer |= 0 << stream->buffer_pos;
+        stream->char_buffer |= 0 << stream->char_buffer_pos;
 
-    /* If buffer is full then output */
-    if (stream->buffer_pos++ == 7) 
+    /* If char_buffer is full then output */
+    if (stream->char_buffer_pos++ == 7) 
     {
-        return_status = fputc(stream->buffer, stream->fp);
+        return_status = fputc(stream->char_buffer, stream->fp);
         if(return_status == EOF)
             err_sys("Writing to file");
-        stream->buffer = 0;
-        stream->buffer_pos = 0;
+        stream->char_buffer = 0;
+        stream->char_buffer_pos = 0;
     }
 }

@@ -16,14 +16,14 @@ typedef struct
 {
     FILE *fp;                  
     Mode mode;   
-    int buffer;
-    int buffer_pos; 
+    int char_buffer;
+    int char_buffer_pos; 
 } FileStream;
 
 /* Functions */
-FileStream* open_file_stream(char *fileName, Mode mode, int buf, int bufpos);
+FileStream* open_file_stream(char *fileName, Mode mode, int char_buffer, int char_buffer_pos);
 void close_file_stream(FileStream *stream);
-void clear_output_buffer(FileStream *output_stream);
+void clear_output_buffer(FileStream *stream);
 int read_byte(FileStream *stream);
 int read_bit(FileStream *stream);
 void write_code(FileStream *stream, char *code, unsigned int code_length);
