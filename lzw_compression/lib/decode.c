@@ -30,7 +30,7 @@ void lzw_decode(char *input, char *output)
     if(!read_code(input_stream, &code, current_code_length))
         return;
 
-    write_byte(output_stream, code);
+    put_char(output_stream, code);
     old_code = code;
     first_c = code;
 
@@ -52,7 +52,7 @@ void lzw_decode(char *input, char *output)
             /* Code not in dictionary */
             unsigned char tmp = first_c;
             first_c = decode_out(old_code, output_stream, dictionary);
-            write_byte(output_stream, tmp);
+            put_char(output_stream, tmp);
         }
         
         /* Check if dictionary resize is needed */
@@ -73,7 +73,10 @@ void lzw_decode(char *input, char *output)
         next_code++;
         old_code = code;
     }
-
+    
+    /* Write any bytes left in io_buffer to stream */
+    clear_output_buffer(output_stream);
+    
     free(dictionary);
     close_file_stream(input_stream);
     close_file_stream(output_stream);
@@ -96,7 +99,7 @@ unsigned char decode_out(unsigned int code, FileStream *output_stream, DecodeDic
         first_c = code;
         suffix = code;
     }
-    write_byte(output_stream, suffix);
+    put_char(output_stream, suffix);
 
     return first_c;
 }
