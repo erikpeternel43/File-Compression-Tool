@@ -21,14 +21,14 @@ void lzw_encode(char *input, char *ouput)
     FileStream *output_stream = open_file_stream(ouput, FILE_WRITE, 0, 0);
 
     /* Get first byte from file or return if file is empty */
-    if((byte = fgetc(input_stream->fp)) == EOF)
+    if((byte = get_char(input_stream)) == EOF)
         return;
     
     code = byte;
     write_code(output_stream, code, current_code_length);
 
     /* Create root with first 2 characters, return if there is no second byte */
-    if((byte = fgetc(input_stream->fp)) != EOF)
+    if((byte = get_char(input_stream)) != EOF)
     {
         root = create_node(next_code, code, byte);
         code = byte;
@@ -38,7 +38,7 @@ void lzw_encode(char *input, char *ouput)
         return;
 
     /* Get through rest of the file */
-    while((byte = fgetc(input_stream->fp)) != EOF)
+    while((byte = get_char(input_stream)) != EOF)
     {
         search_key = make_key(code, byte);
         node = find_DictNode(root, search_key);

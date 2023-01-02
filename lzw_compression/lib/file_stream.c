@@ -20,8 +20,14 @@ FileStream *open_file_stream(char *fileName, Mode mode, int buffer, int buffer_p
         err_sys("Opening file");
 
     stream->mode = mode;
-    stream->buffer = buffer;
-    stream->buffer_pos = buffer_pos;
+    stream->char_buffer = buffer;
+    stream->char_buffer_pos = buffer_pos;
+    stream->io_buffer = malloc(IO_BUFFER_SIZE * sizeof(unsigned char));
+    stream->io_buffer_pos = 0;
+    stream->io_buffer_length = 0;
+    
+    if(stream->io_buffer == NULL)
+        err_sys("Allocating memory for buffer");
 
     return stream;
 }
@@ -37,16 +43,18 @@ void close_file_stream(FileStream *stream)
     if(return_status < 0)
         err_sys("Closing file");
 
+    free(stream->io_buffer);
     free(stream);
 }
 
-/* Function clears output buffer */
-void clear_output_buffer(FileStream *output_stream)
+/* Function clears char_buffer and io_buffer */
+void clear_output_buffer(FileStream *stream)
 {
-    int return_status;
-    if(output_stream->buffer_pos != 0){
-        return_status = fputc(output_stream->buffer, output_stream->fp);
-        if(return_status == EOF)
+    if(stream->char_buffer_pos != 0)
+        put_char(stream, stream->char_buffer);
+    if(stream->io_buffer_pos != 0){
+        stream->io_buffer_length = fwrite(stream->io_buffer, sizeof(unsigned char), stream->io_buffer_pos, stream->fp);
+        if(stream->io_buffer_length != stream->io_buffer_pos)
             err_sys("Writing to file");
     }
 }
@@ -54,37 +62,25 @@ void clear_output_buffer(FileStream *output_stream)
 /* Function writes code of length code_length to stream */
 void write_code(FileStream *stream, unsigned int code, unsigned int code_length)
 {
-    int return_status;
     int mask_pos = 0;
     
     while (code_length--)
     {
         /* Check if there is 0 or 1 in code at mask_pos and put result in buffer at buffer_pos */
         if(code & (1 << mask_pos))
-            stream->buffer |= 1 << stream->buffer_pos;
+            stream->char_buffer |= 1 << stream->char_buffer_pos;
         else
-            stream->buffer |= 0 << stream->buffer_pos;
+            stream->char_buffer |= 0 << stream->char_buffer_pos;
         mask_pos++;
         
         /* If buffer is full then output */
-        if (stream->buffer_pos++ == 7) 
+        if (stream->char_buffer_pos++ == 7) 
         {
-            return_status = fputc(stream->buffer, stream->fp);
-            if(return_status == EOF)
-                err_sys("Writing to file");
-
-            stream->buffer = 0;
-            stream->buffer_pos = 0;
+            put_char(stream, stream->char_buffer);
+            stream->char_buffer = 0;
+            stream->char_buffer_pos = 0;
         }
     }
-}
-
-/* Function writes byte to stream */
-void write_byte(FileStream *stream, unsigned char byte){
-    int return_value;
-    return_value = fputc(byte, stream->fp);
-    if(return_value == EOF)
-        err_sys("Writing to file");
 }
 
 /* Function reads code of length code_length from stream */
@@ -101,24 +97,53 @@ bool read_code(FileStream *stream, unsigned int *code, unsigned int code_length)
     return true;
 }
 
-/* Function reads one bit from buf and returns its value */
+/* Function reads one bit from char_buffer and returns its value */
 int next_bit(FileStream *stream){
     int bit;
 
     /* If max bit is reached */
-    if (stream->buffer_pos == 256)
+    if (stream->char_buffer_pos == 256)
     {
-        stream->buffer_pos = 1;
-        stream->buffer = fgetc(stream->fp);
-        if (stream->buffer == EOF)
+        stream->char_buffer_pos = 1;
+        stream->char_buffer = get_char(stream);
+        if (stream->char_buffer == EOF)
             return EOF;
     }
 
-    if(stream->buffer & stream->buffer_pos)
+    if(stream->char_buffer & stream->char_buffer_pos)
         bit = 1;
     else
         bit = 0; 
-    stream->buffer_pos <<= 1;
+    stream->char_buffer_pos <<= 1;
     
     return bit;
+}
+
+/* Function reads character from stream using custum buffering */
+int get_char(FileStream *stream)
+{
+    if(stream->io_buffer_pos == stream->io_buffer_length){
+        stream->io_buffer_length = fread(stream->io_buffer, sizeof(unsigned char), IO_BUFFER_SIZE, stream->fp);
+        if(ferror(stream->fp))
+            err_sys("Reading from file");
+        if(feof(stream->fp) && stream->io_buffer_length == 0)
+            return EOF;
+        stream->io_buffer_pos = 0;
+    }
+    unsigned char ret_char = stream->io_buffer[stream->io_buffer_pos];
+    stream->io_buffer_pos++;
+    return ret_char;
+}
+
+/* Function puts character to stream using custum buffering */
+void put_char(FileStream *stream, unsigned char character)
+{
+    if(stream->io_buffer_pos == IO_BUFFER_SIZE){
+        stream->io_buffer_length = fwrite(stream->io_buffer, sizeof(unsigned char), IO_BUFFER_SIZE, stream->fp);
+        if(stream->io_buffer_length != IO_BUFFER_SIZE)
+            err_sys("Writing to file");
+        stream->io_buffer_pos = 0;
+    }
+    stream->io_buffer[stream->io_buffer_pos] = character;
+    stream->io_buffer_pos++;
 }
