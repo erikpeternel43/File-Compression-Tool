@@ -50,9 +50,9 @@ void lzw_decode(char *input, char *output)
         else
         {
             /* Code not in dictionary */
-            unsigned char tmp = first_c;
+            //unsigned char tmp = first_c;
             first_c = decode_out(old_code, output_stream, dictionary);
-            put_char(output_stream, tmp);
+            put_char(output_stream, first_c);
         }
         
         /* Check if dictionary resize is needed */

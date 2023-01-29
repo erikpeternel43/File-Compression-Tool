@@ -6,7 +6,7 @@
 #include "lzw.h"
 #include "err_sys.h"
 
-void lzw_encode(char *input, char *ouput)
+void lzw_encode(char *input, char *output)
 {
     unsigned char current_code_length = MIN_CODE_LENGTH;    
     unsigned int next_code = 256; 
@@ -18,7 +18,7 @@ void lzw_encode(char *input, char *ouput)
 
     /* Open streams */
     FileStream *input_stream = open_file_stream(input, FILE_READ, 0, 0);
-    FileStream *output_stream = open_file_stream(ouput, FILE_WRITE, 0, 0);
+    FileStream *output_stream = open_file_stream(output, FILE_WRITE, 0, 0);
 
     /* Get first byte from file or return if file is empty */
     if((byte = get_char(input_stream)) == EOF)
