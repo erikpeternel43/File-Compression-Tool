@@ -1,1 +1,5 @@
 data/
+huffman_compression/compress.sh
+huffman_compression/decompress.sh
+lzw_compression/compress.sh
+lzw_compression/decompress.sh
