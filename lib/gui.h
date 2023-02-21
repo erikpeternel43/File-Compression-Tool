@@ -4,10 +4,9 @@
 #ifndef GUI_H
 #define GUI_H
 
-GtkWidget *window;
+GtkWidget *window, *output;
 GtkLabel *progress_label;
 GtkFileChooser *input;
-GtkFileChooser *output;
 GtkBuilder *builder;
 GtkRadioButton *radio_button;
 
