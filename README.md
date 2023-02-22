@@ -17,7 +17,7 @@ Cleaning:
 
 # GUI 
 
-![Capture](https://user-images.githubusercontent.com/76570883/203646775-cee291c0-b0a1-4fca-b688-08a86c922985.PNG)
+![Capture](https://user-images.githubusercontent.com/76570883/220720286-d138907d-d6db-44be-9693-5454bcc72705.png)
 
-Both input and output files have to be selected. Choose algorithm of choice and then press on compress/decompress button. Current status is shown in buttom left corner.
+Both input and output files have to be entered. Choose algorithm of choice and then press on compress/decompress button. Current status is shown in buttom left corner. Output file is located in same directory as original file.
         
