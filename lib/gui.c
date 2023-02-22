@@ -32,8 +32,8 @@ void compress_click()
     int return_status;
     /* Path to file and directory */
     GFile *input_file = gtk_file_chooser_get_file(input);
-    char  *input_path = g_file_get_path(input_file);
     GFile *parent_dir = g_file_get_parent(input_file);
+    char  *input_path = g_file_get_path(input_file);
     char  *parent_path = g_file_get_path(parent_dir);
     /* Output_file */
     const gchar *output_name = gtk_entry_get_text(GTK_ENTRY(output));
@@ -48,23 +48,15 @@ void compress_click()
         char * output_path = calloc(sizeof(char), len_parent + len_output + 7);
         if(output_path == NULL)
             err_sys("Allocating memory for output_path.");
+        
+        memcpy(output_path, parent_path, len_parent);
+        output_path[len_parent] = '/';
+        memcpy(output_path + len_parent + 1, output_name, len_output);
 
         if(huff_selected())
-        {
-            memcpy(output_path, parent_path, len_parent);
-            /* Add slash to path */
-            output_path[len_parent] = '/';
-            memcpy(output_path + len_parent + 1, output_name, len_output);
             memcpy(output_path + len_parent + len_output + 1, ".huff", 5);
-        }
         else
-        {
-            memcpy(output_path, parent_path, len_parent);
-            /* Add slash to path */
-            output_path[len_parent] = '/';
-            memcpy(output_path + len_parent + 1, output_name, len_output);
             memcpy(output_path + len_parent + len_output + 1, ".lzw", 4);
-        }
 
         /* Creating child which will execute program for compress - either huffman or lzw */
         pid_t pid = fork();
@@ -109,8 +101,8 @@ void decompress_click()
     int return_status;
     /* Path to file and directory */
     GFile *input_file = gtk_file_chooser_get_file(input);
-    char  *input_path = g_file_get_path(input_file);
     GFile *parent_dir = g_file_get_parent(input_file);
+    char  *input_path = g_file_get_path(input_file);
     char  *parent_path = g_file_get_path(parent_dir);
     /* Output_file */
     const gchar *output_name = gtk_entry_get_text(GTK_ENTRY(output));
@@ -126,18 +118,9 @@ void decompress_click()
         if(output_path == NULL)
             err_sys("Allocating memory for output_path.");
 
-        if(huff_selected()){
-            memcpy(output_path, parent_path, len_parent);
-            /* Add slash to path */
-            output_path[len_parent] = '/';
-            memcpy(output_path + len_parent + 1, output_name, len_output);
-        }
-        else{
-            memcpy(output_path, parent_path, len_parent);
-            /* Add slash to path */
-            output_path[len_parent] = '/';
-            memcpy(output_path + len_parent + 1, output_name, len_output);
-        }
+        memcpy(output_path, parent_path, len_parent);
+        output_path[len_parent] = '/';
+        memcpy(output_path + len_parent + 1, output_name, len_output);
 
         /* Creating child which will execute program for compress - either huffman or lzw */
         pid_t pid = fork();
